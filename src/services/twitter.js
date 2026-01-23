@@ -52,4 +52,4 @@ async function verifyCredentials() {
   }
 }
 
-export { postTweet, verifyCredentials, initClient };
+export { postTweet, verifyCredentials };

@@ -38,7 +38,6 @@ async function getRandomAyah() {
     return {
       text: data.text,
       surahName: data.surah.name,
-      surahNumber: data.surah.number,
       ayahNumber: data.numberInSurah,
     };
   } catch (err) {

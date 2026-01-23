@@ -1,7 +1,7 @@
 import cron from 'node-cron';
 import { config } from '../config/index.js';
 import { getRandomAyah, formatTweet } from '../services/quran.js';
-import { postTweet, initClient } from '../services/twitter.js';
+import { postTweet } from '../services/twitter.js';
 import logger from '../utils/logger.js';
 
 // thursday tweet - fixed
@@ -44,7 +44,6 @@ async function postThursdayTweet() {
   logger.info('Posting Thursday salawat...');
   
   try {
-    initClient();
     const result = await postTweet(THURSDAY_MSG);
     logger.info('Thursday tweet posted', { id: result.id });
   } catch (err) {
