@@ -3,9 +3,11 @@
 ## 🚀 خطوات النشر على Railway
 
 ### 1. إنشاء حساب على Railway
+
 اذهب إلى [railway.app](https://railway.app/) وسجل الدخول بحساب GitHub
 
 ### 2. تثبيت Railway CLI (اختياري)
+
 ```bash
 npm install -g @railway/cli
 ```
