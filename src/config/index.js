@@ -1,59 +1,28 @@
 import dotenv from 'dotenv';
-
-// Load environment variables
 dotenv.config();
 
-/**
- * Application configuration
- */
+// config stuff
 const config = {
-  // X (Twitter) API credentials
   x: {
     apiKey: process.env.X_API_KEY,
     apiSecret: process.env.X_API_SECRET,
     accessToken: process.env.X_ACCESS_TOKEN,
     accessTokenSecret: process.env.X_ACCESS_TOKEN_SECRET,
   },
-
-  // Scheduler configuration
-  scheduler: {
-    // Default: 9:00 AM and 9:00 PM every day
-    cronSchedule: process.env.CRON_SCHEDULE || '0 9,21 * * *',
-    timezone: process.env.TIMEZONE || 'Asia/Muscat',
-  },
-
-  // Quran API
-  quranApi: {
-    baseUrl: 'https://api.alquran.cloud/v1',
-    randomAyahEndpoint: '/ayah/random',
-  },
-
-  // Application settings
-  app: {
-    enablePosting: process.env.ENABLE_POSTING !== 'false',
-    logLevel: process.env.LOG_LEVEL || 'info',
-  },
+  cron: process.env.CRON_SCHEDULE || '0 9,21 * * *',
+  timezone: process.env.TIMEZONE || 'Asia/Muscat',
+  quranApiUrl: 'https://api.alquran.cloud/v1/ayah/random',
+  enablePosting: process.env.ENABLE_POSTING !== 'false',
 };
 
-/**
- * Validate required configuration
- */
-export function validateConfig() {
-  const requiredVars = [
-    { key: 'X_API_KEY', value: config.x.apiKey },
-    { key: 'X_API_SECRET', value: config.x.apiSecret },
-    { key: 'X_ACCESS_TOKEN', value: config.x.accessToken },
-    { key: 'X_ACCESS_TOKEN_SECRET', value: config.x.accessTokenSecret },
-  ];
-
-  const missing = requiredVars.filter((v) => !v.value);
-
+// check if we have all the required env vars
+function checkConfig() {
+  const required = ['X_API_KEY', 'X_API_SECRET', 'X_ACCESS_TOKEN', 'X_ACCESS_TOKEN_SECRET'];
+  const missing = required.filter(key => !process.env[key]);
+  
   if (missing.length > 0) {
-    const missingKeys = missing.map((v) => v.key).join(', ');
-    throw new Error(`Missing required environment variables: ${missingKeys}`);
+    throw new Error(`Missing env vars: ${missing.join(', ')}`);
   }
-
-  return true;
 }
 
-export default config;
+export { config, checkConfig };

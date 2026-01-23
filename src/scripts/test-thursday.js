@@ -1,35 +1,20 @@
-/**
- * Test script to post the Thursday Salawat tweet
- * Run with: npm run test:thursday
- */
+// test thursday tweet
+import { checkConfig } from '../config/index.js';
+import { verifyCredentials } from '../services/twitter.js';
+import { postThursdayTweet } from '../scheduler/index.js';
 
-import { validateConfig } from '../config/index.js';
-import scheduler from '../scheduler/index.js';
-import xService from '../services/x.service.js';
-import logger from '../utils/logger.js';
-
-async function testThursday() {
-  logger.info('🧪 Testing Thursday Salawat Tweet...');
-  logger.info('═'.repeat(50));
-
+async function test() {
+  console.log('Testing Thursday tweet...\n');
+  
   try {
-    // Validate config first
-    validateConfig();
-
-    // Initialize X service
-    xService.initialize();
-    await xService.verifyCredentials();
-
-    // Run Thursday job
-    await scheduler.runThursdayNow();
-
-    logger.info('═'.repeat(50));
-    logger.info('✅ Test completed!');
-
-  } catch (error) {
-    logger.error('❌ Test failed', { error: error.message });
-    process.exit(1);
+    checkConfig();
+    await verifyCredentials();
+    await postThursdayTweet();
+    
+    console.log('Done!');
+  } catch (err) {
+    console.error('Error:', err.message);
   }
 }
 
-testThursday();
+test();

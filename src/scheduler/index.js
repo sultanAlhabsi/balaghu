@@ -1,185 +1,90 @@
 import cron from 'node-cron';
-import config from '../config/index.js';
-import tweetService from '../services/tweet.service.js';
-import xService from '../services/x.service.js';
+import { config } from '../config/index.js';
+import { getRandomAyah, formatTweet } from '../services/quran.js';
+import { postTweet, initClient } from '../services/twitter.js';
 import logger from '../utils/logger.js';
 
-/**
- * Fixed tweet for Thursday (before Friday)
- */
-const THURSDAY_TWEET = `قال الرسولﷺ: "أكثروا من الصلاة عليّ ليلة الجمعة ويوم الجمعة فإن صلاتكم معروضة عليّ" 🌻☁️
+// thursday tweet - fixed
+const THURSDAY_MSG = `قال الرسولﷺ: "أكثروا من الصلاة عليّ ليلة الجمعة ويوم الجمعة فإن صلاتكم معروضة عليّ" 🌻☁️
 
 ﴿ إِنَّ ٱللَّهَ وَمَلَـٰۤئكَتَهُۥ یُصَلُّونَ عَلَى ٱلنَّبِیِّۚ یَـٰۤأَیُّهَا ٱلَّذِینَ ءَامَنُوا۟ صَلُّوا۟ عَلَیۡهِ وَسَلِّمُوا۟ تَسۡلِیمًا ﴾
 
 #سورة_الأحزاب`;
 
-/**
- * Scheduler
- * Handles scheduling the daily Ayah posting
- */
-class Scheduler {
-  constructor() {
-    this.dailyJob = null;
-    this.thursdayJob = null;
-    this.isRunning = false;
-  }
+let dailyJob = null;
+let thursdayJob = null;
 
-  /**
-   * Start the scheduler
-   */
-  start() {
-    const { cronSchedule, timezone } = config.scheduler;
 
-    logger.info('📅 Starting scheduler', {
-      dailySchedule: cronSchedule,
-      thursdaySchedule: '0 19 * * 4',
-      timezone: timezone,
-    });
-
-    // Validate cron expression
-    if (!cron.validate(cronSchedule)) {
-      throw new Error(`Invalid cron expression: ${cronSchedule}`);
-    }
-
-    // Daily Ayah job (9 AM and 9 PM)
-    this.dailyJob = cron.schedule(
-      cronSchedule,
-      async () => {
-        await this.executeDailyJob();
-      },
-      {
-        scheduled: true,
-        timezone: timezone,
-      }
-    );
-
-    // Thursday job (7 PM every Thursday - day 4)
-    this.thursdayJob = cron.schedule(
-      '0 19 * * 4',
-      async () => {
-        await this.executeThursdayJob();
-      },
-      {
-        scheduled: true,
-        timezone: timezone,
-      }
-    );
-
-    this.isRunning = true;
-
-    logger.info('✅ Scheduler started successfully');
-    logger.info(`⏰ Daily Ayah: ${cronSchedule} (${timezone})`);
-    logger.info(`⏰ Thursday Salawat: Every Thursday at 7:00 PM (${timezone})`);
-  }
-
-  /**
-   * Execute the daily Ayah job
-   */
-  async executeDailyJob() {
-    logger.info('⏰ Daily Ayah job triggered');
-
-    try {
-      const result = await tweetService.postDailyAyah();
-
-      if (result.success) {
-        logger.info('✅ Daily Ayah job completed successfully');
-      } else {
-        logger.error('❌ Daily Ayah job failed', { error: result.error });
-      }
-    } catch (error) {
-      logger.error('❌ Unexpected error in daily job', {
-        error: error.message,
-      });
-    }
-  }
-
-  /**
-   * Execute the Thursday Salawat job
-   */
-  async executeThursdayJob() {
-    logger.info('⏰ Thursday Salawat job triggered');
-
-    try {
-      // Initialize X client if needed
-      xService.initialize();
-
-      // Post the fixed Thursday tweet
-      const result = await xService.postTweet(THURSDAY_TWEET);
-
-      logger.info('✅ Thursday Salawat posted successfully', {
-        tweetId: result.id,
-      });
-    } catch (error) {
-      logger.error('❌ Failed to post Thursday Salawat', {
-        error: error.message,
-      });
-    }
-  }
-
-  /**
-   * Stop the scheduler
-   */
-  stop() {
-    if (this.dailyJob) {
-      this.dailyJob.stop();
-    }
-    if (this.thursdayJob) {
-      this.thursdayJob.stop();
-    }
-    this.isRunning = false;
-    logger.info('🛑 Scheduler stopped');
-  }
-
-  /**
-   * Get the next scheduled run time
-   * @returns {string} Human-readable next run time
-   */
-  getNextRunTime() {
-    const { cronSchedule, timezone } = config.scheduler;
+// post random ayah
+async function postDailyAyah() {
+  logger.info('Starting daily ayah post...');
+  
+  try {
+    const ayah = await getRandomAyah();
+    const tweet = formatTweet(ayah);
     
-    // Parse cron schedule
-    const [minute, hour] = cronSchedule.split(' ');
-    
-    const now = new Date();
-    const next = new Date();
-    
-    // Handle multiple hours (e.g., "9,21")
-    const hours = hour.split(',').map(h => parseInt(h));
-    const currentHour = now.getHours();
-    
-    // Find next hour
-    let nextHour = hours.find(h => h > currentHour) || hours[0];
-    next.setHours(nextHour, parseInt(minute), 0, 0);
-    
-    // If the time has passed today, schedule for tomorrow
-    if (next <= now) {
-      next.setDate(next.getDate() + 1);
-      next.setHours(hours[0], parseInt(minute), 0, 0);
+    // TODO: maybe check length here?
+    if (tweet.length > 280) {
+      logger.warn('Tweet too long!', { length: tweet.length });
     }
     
-    return next.toLocaleString('ar-SA', { 
-      timeZone: timezone,
-      dateStyle: 'full',
-      timeStyle: 'short'
-    });
-  }
-
-  /**
-   * Run the daily job immediately (for testing)
-   */
-  async runNow() {
-    logger.info('🚀 Running daily job immediately...');
-    return await this.executeDailyJob();
-  }
-
-  /**
-   * Run the Thursday job immediately (for testing)
-   */
-  async runThursdayNow() {
-    logger.info('🚀 Running Thursday job immediately...');
-    return await this.executeThursdayJob();
+    const result = await postTweet(tweet);
+    logger.info('Daily ayah posted', { id: result.id, surah: ayah.surahName });
+    return { success: true, id: result.id };
+    
+  } catch (err) {
+    logger.error('Daily ayah failed', { error: err.message });
+    return { success: false, error: err.message };
   }
 }
 
-// Export singleton instance
-export default new Scheduler();
+
+// post thursday salawat
+async function postThursdayTweet() {
+  logger.info('Posting Thursday salawat...');
+  
+  try {
+    initClient();
+    const result = await postTweet(THURSDAY_MSG);
+    logger.info('Thursday tweet posted', { id: result.id });
+  } catch (err) {
+    logger.error('Thursday tweet failed', { error: err.message });
+  }
+}
+
+
+function startScheduler() {
+  const { cron: schedule, timezone } = config;
+  
+  logger.info('Starting scheduler...', { schedule, timezone });
+  
+  // validate cron
+  if (!cron.validate(schedule)) {
+    throw new Error('Invalid cron: ' + schedule);
+  }
+  
+  // daily job
+  dailyJob = cron.schedule(schedule, async () => {
+    logger.info('Cron triggered - daily ayah');
+    await postDailyAyah();
+  }, { timezone });
+  
+  // thursday job - 7pm
+  thursdayJob = cron.schedule('0 19 * * 4', async () => {
+    logger.info('Cron triggered - thursday salawat');
+    await postThursdayTweet();
+  }, { timezone });
+  
+  logger.info('Scheduler started');
+  logger.info(`Daily: ${schedule}`);
+  logger.info('Thursday: 0 19 * * 4 (7pm)');
+}
+
+
+function stopScheduler() {
+  if (dailyJob) dailyJob.stop();
+  if (thursdayJob) thursdayJob.stop();
+  logger.info('Scheduler stopped');
+}
+
+export { startScheduler, stopScheduler, postDailyAyah, postThursdayTweet };
