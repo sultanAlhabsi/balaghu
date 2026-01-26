@@ -23,11 +23,6 @@ async function postDailyAyah() {
     const ayah = await getRandomAyah();
     const tweet = formatTweet(ayah);
     
-    // TODO: maybe check length here?
-    if (tweet.length > 280) {
-      logger.warn('Tweet too long!', { length: tweet.length });
-    }
-    
     const result = await postTweet(tweet);
     logger.info('Daily ayah posted', { id: result.id, surah: ayah.surahName });
     return { success: true, id: result.id };
