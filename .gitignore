@@ -70,9 +70,6 @@ web_modules/
 .env.*
 !.env.example
 
-# posted ayahs tracking file
-posted-ayahs.json
-
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache

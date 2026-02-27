@@ -1,0 +1,33 @@
+name: Thursday Salawat
+
+on:
+  schedule:
+    - cron: "0 15 * * 4" # 7:00 مساءً كل خميس بتوقيت مسقط (UTC+4)
+  workflow_dispatch: # تشغيل يدوي من GitHub
+
+jobs:
+  post-thursday:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Post Thursday salawat
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+          ENABLE_POSTING: "true"
+          TIMEZONE: "Asia/Muscat"
+        run: node src/scripts/test-thursday.js
