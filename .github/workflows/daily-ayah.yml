@@ -6,6 +6,9 @@ on:
     - cron: "0 17 * * *" # 9:00 مساءً بتوقيت مسقط (UTC+4)
   workflow_dispatch: # تشغيل يدوي من GitHub
 
+permissions:
+  contents: write
+
 jobs:
   post-ayah:
     runs-on: ubuntu-latest
