@@ -2,8 +2,8 @@ name: Daily Quran Ayah
 
 on:
   schedule:
-    - cron: "0 5 * * *" # 9:00 صباحاً بتوقيت مسقط (UTC+4)
-    - cron: "0 17 * * *" # 9:00 مساءً بتوقيت مسقط (UTC+4)
+    - cron: "15 5 * * *" # 9:15 صباحاً بتوقيت مسقط (UTC+4)
+    - cron: "15 17 * * *" # 9:15 مساءً بتوقيت مسقط (UTC+4)
   workflow_dispatch: # تشغيل يدوي من GitHub
 
 permissions:

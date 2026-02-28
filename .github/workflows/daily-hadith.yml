@@ -1,0 +1,46 @@
+name: Daily Hadith
+
+on:
+  schedule:
+    - cron: "20 9 * * *" # 1:20 ظهراً بتوقيت مسقط (UTC+4)
+  workflow_dispatch: # تشغيل يدوي من GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  post-hadith:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Post daily hadith
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+          ENABLE_POSTING: "true"
+          TIMEZONE: "Asia/Muscat"
+        run: node src/scripts/test-hadith-tweet.js
+
+      - name: Save posted hadiths
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add posted-hadiths.json
+          git diff --staged --quiet || git commit -m "chore: update posted hadiths [skip ci]"
+          git push

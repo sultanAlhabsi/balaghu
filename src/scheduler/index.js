@@ -1,6 +1,7 @@
 import cron from 'node-cron';
 import { config } from '../config/index.js';
 import { getRandomAyah, formatTweet } from '../services/quran.js';
+import { getRandomHadith, formatHadithTweet } from '../services/hadith.js';
 import { postTweet } from '../services/twitter.js';
 import logger from '../utils/logger.js';
 
@@ -13,6 +14,7 @@ const THURSDAY_MSG = `قال الرسولﷺ: "أكثروا من الصلاة ع
 
 let dailyJob = null;
 let thursdayJob = null;
+let hadithJob = null;
 
 
 // post random ayah
@@ -33,6 +35,24 @@ async function postDailyAyah() {
   }
 }
 
+
+// post random hadith
+async function postDailyHadith() {
+  logger.info('Starting daily hadith post...');
+  
+  try {
+    const hadith = await getRandomHadith();
+    const tweet = formatHadithTweet(hadith);
+    
+    const result = await postTweet(tweet);
+    logger.info('Daily hadith posted', { id: result.id, hadithId: hadith.id });
+    return { success: true, id: result.id };
+    
+  } catch (err) {
+    logger.error('Daily hadith failed', { error: err.message });
+    return { success: false, error: err.message };
+  }
+}
 
 // post thursday salawat
 async function postThursdayTweet() {
@@ -62,6 +82,12 @@ function startScheduler() {
     logger.info('Cron triggered - daily ayah');
     await postDailyAyah();
   }, { timezone });
+
+  // hadith job - 1pm
+  hadithJob = cron.schedule('0 13 * * *', async () => {
+    logger.info('Cron triggered - daily hadith');
+    await postDailyHadith();
+  }, { timezone });
   
   // thursday job - 7pm
   thursdayJob = cron.schedule('0 19 * * 4', async () => {
@@ -70,7 +96,8 @@ function startScheduler() {
   }, { timezone });
   
   logger.info('Scheduler started');
-  logger.info(`Daily: ${schedule}`);
+  logger.info(`Daily Ayah: ${schedule}`);
+  logger.info('Daily Hadith: 0 13 * * * (1pm)');
   logger.info('Thursday: 0 19 * * 4 (7pm)');
 }
 
@@ -78,7 +105,8 @@ function startScheduler() {
 function stopScheduler() {
   if (dailyJob) dailyJob.stop();
   if (thursdayJob) thursdayJob.stop();
+  if (hadithJob) hadithJob.stop();
   logger.info('Scheduler stopped');
 }
 
-export { startScheduler, stopScheduler, postDailyAyah, postThursdayTweet };
+export { startScheduler, stopScheduler, postDailyAyah, postThursdayTweet, postDailyHadith };
