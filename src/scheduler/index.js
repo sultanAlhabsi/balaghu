@@ -1,5 +1,3 @@
-import cron from 'node-cron';
-import { config } from '../config/index.js';
 import { getRandomAyah, formatTweet } from '../services/quran.js';
 import { getRandomHadith, formatHadithTweet } from '../services/hadith.js';
 import { postTweet } from '../services/twitter.js';
@@ -11,11 +9,6 @@ const THURSDAY_MSG = `قال الرسولﷺ: "أكثروا من الصلاة ع
 ﴿ إِنَّ ٱللَّهَ وَمَلَـٰۤئكَتَهُۥ یُصَلُّونَ عَلَى ٱلنَّبِیِّۚ یَـٰۤأَیُّهَا ٱلَّذِینَ ءَامَنُوا۟ صَلُّوا۟ عَلَیۡهِ وَسَلِّمُوا۟ تَسۡلِیمًا ﴾
 
 #سورة_الأحزاب`;
-
-let dailyJob = null;
-let thursdayJob = null;
-let hadithJob = null;
-
 
 // post random ayah
 async function postDailyAyah() {
@@ -66,47 +59,4 @@ async function postThursdayTweet() {
   }
 }
 
-
-function startScheduler() {
-  const { cron: schedule, timezone } = config;
-  
-  logger.info('Starting scheduler...', { schedule, timezone });
-  
-  // validate cron
-  if (!cron.validate(schedule)) {
-    throw new Error('Invalid cron: ' + schedule);
-  }
-  
-  // daily job
-  dailyJob = cron.schedule(schedule, async () => {
-    logger.info('Cron triggered - daily ayah');
-    await postDailyAyah();
-  }, { timezone });
-
-  // hadith job - 1pm
-  hadithJob = cron.schedule('0 13 * * *', async () => {
-    logger.info('Cron triggered - daily hadith');
-    await postDailyHadith();
-  }, { timezone });
-  
-  // thursday job - 7pm
-  thursdayJob = cron.schedule('0 19 * * 4', async () => {
-    logger.info('Cron triggered - thursday salawat');
-    await postThursdayTweet();
-  }, { timezone });
-  
-  logger.info('Scheduler started');
-  logger.info(`Daily Ayah: ${schedule}`);
-  logger.info('Daily Hadith: 0 13 * * * (1pm)');
-  logger.info('Thursday: 0 19 * * 4 (7pm)');
-}
-
-
-function stopScheduler() {
-  if (dailyJob) dailyJob.stop();
-  if (thursdayJob) thursdayJob.stop();
-  if (hadithJob) hadithJob.stop();
-  logger.info('Scheduler stopped');
-}
-
-export { startScheduler, stopScheduler, postDailyAyah, postThursdayTweet, postDailyHadith };
+export { postDailyAyah, postThursdayTweet, postDailyHadith };

@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "description": "خدمة نشر آية قرآنية يومياً على منصة X",
   "type": "module",
-  "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "node --watch src/index.js",
     "test:tweet": "node src/scripts/test-tweet.js",
     "test:ayah": "node src/scripts/test-ayah.js",
+    "test:hadith": "node src/scripts/test-hadith.js",
+    "test:hadith-tweet": "node src/scripts/test-hadith-tweet.js",
     "test:thursday": "node src/scripts/test-thursday.js",
     "stats": "node src/scripts/show-stats.js"
   },
@@ -24,7 +23,6 @@
   "license": "MIT",
   "dependencies": {
     "dotenv": "^16.3.1",
-    "node-cron": "^3.0.3",
     "twitter-api-v2": "^1.15.2"
   },
   "engines": {
