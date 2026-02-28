@@ -1,9 +1,13 @@
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import logger from '../utils/logger.js';
 
-const HADITHS_FILE = path.join(process.cwd(), 'src', 'data', 'myData.json');
-const POSTED_HADITHS_FILE = path.join(process.cwd(), 'posted-hadiths.json');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const HADITHS_FILE = path.join(__dirname, '..', 'data', 'myData.json');
+const POSTED_HADITHS_FILE = path.join(__dirname, '..', '..', 'posted-hadiths.json');
 
 let hadiths = [];
 let postedHadiths = new Set();
@@ -67,14 +71,27 @@ async function getRandomHadith() {
   }
 
   // Filter out posted hadiths and ensure length is within Twitter limits (280 chars)
-  const availableHadiths = hadiths.filter(h => {
+  let availableHadiths = hadiths.filter(h => {
     if (postedHadiths.has(h.id)) return false;
     const tweetLength = formatHadithTweet(h).length;
     return tweetLength <= 280;
   });
   
+  // If all short hadiths are posted, we reset the history
   if (availableHadiths.length === 0) {
-    throw new Error('No available hadiths found that fit the length limit.');
+    logger.warn('No available short hadiths found. Resetting history...');
+    postedHadiths.clear();
+    await savePostedHadiths();
+    
+    // Fetch available hadiths again after reset
+    availableHadiths = hadiths.filter(h => {
+      const tweetLength = formatHadithTweet(h).length;
+      return tweetLength <= 280;
+    });
+
+    if (availableHadiths.length === 0) {
+      throw new Error('Absolutely no hadiths fit the 280-character limit in the database.');
+    }
   }
 
   // Pick a random one

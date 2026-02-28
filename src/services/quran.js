@@ -2,12 +2,16 @@ import { config } from '../config/index.js';
 import logger from '../utils/logger.js';
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // arabic numbers for the ayah
 const arabicNums = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
 
 // file to store posted ayahs permanently
-const POSTED_FILE = path.join(process.cwd(), 'posted-ayahs.json');
+const POSTED_FILE = path.join(__dirname, '..', '..', 'posted-ayahs.json');
 
 // track posted ayahs permanently
 let postedAyahs = new Map(); // Map of globalNumber -> ayah details
@@ -164,6 +168,16 @@ async function getRandomAyah() {
         length: tweet.length, 
         attempt 
       });
+      
+      // اذا كانت الآية طويلة جداً، نضيفها لقائمة المستبعدات حتى لا نحاول جلبها مرة أخرى في المحاولات القادمة
+      postedAyahs.set(ayah.globalAyahNumber, {
+        globalNumber: ayah.globalAyahNumber,
+        surahName: ayah.surahName,
+        ayahNumber: ayah.ayahNumber,
+        text: ayah.text.trim().replace(/\n/g, ' '),
+        reason: 'too_long'
+      });
+      await savePostedAyahs();
       
     } catch (err) {
       logger.error('Failed to fetch ayah', { error: err.message, attempt });
