@@ -62,14 +62,27 @@ async function postTweet(text) {
 async function verifyCredentials() {
   initClient();
   
-  try {
-    const res = await client.v2.me();
-    logger.info('Credentials OK', { user: res.data.username });
-    return res.data;
-  } catch (err) {
-    logger.error('Credential check failed', { error: err.message });
-    throw err;
-  }
-}
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY_MS = 60 * 1000;
+  let attempt = 1;
 
+  while (attempt <= MAX_RETRIES) {
+    try {
+      const res = await client.v2.me();
+      logger.info('Credentials OK', { user: res.data.username });
+      return res.data;
+    } catch (err) {
+      if (err.code === 503 || err.code === 500) {
+        logger.warn(`Twitter API issue during credential check (Code ${err.code}), attempt ${attempt} failed.`);
+        if (attempt === MAX_RETRIES) {
+          logger.error('Credential check failed after max retries', { error: err.message });
+          throw err;
+        }
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+        attempt++;
+      } else {
+        logger.error('Credential check failed', { error: err.message });
+        throw err;
+      }
+    }
 export { postTweet, verifyCredentials };
