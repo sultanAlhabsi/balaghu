@@ -1,5 +1,4 @@
 import { checkConfig } from '../config/index.js';
-import { verifyCredentials } from '../services/twitter.js';
 import { postDailyHadith } from '../scheduler/index.js';
 
 async function test() {
@@ -7,7 +6,6 @@ async function test() {
   
   try {
     checkConfig();
-    await verifyCredentials();
     
     const result = await postDailyHadith();
     console.log('\nResult:', result);

@@ -1,6 +1,5 @@
 // test posting a tweet
 import { checkConfig } from '../config/index.js';
-import { verifyCredentials } from '../services/twitter.js';
 import { postDailyAyah } from '../scheduler/index.js';
 
 async function test() {
@@ -8,7 +7,6 @@ async function test() {
   
   try {
     checkConfig();
-    await verifyCredentials();
     
     const result = await postDailyAyah();
     console.log('\nResult:', result);
