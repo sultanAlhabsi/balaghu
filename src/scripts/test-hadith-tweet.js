@@ -10,6 +10,11 @@ async function test() {
     const result = await postDailyHadith();
     console.log('\nResult:', result);
     
+    if (!result.success || result.id === 'dry-run') {
+      console.error('Hadith was not posted. id:', result.id);
+      process.exit(1);
+    }
+    
   } catch (err) {
     console.error('Error:', err.message);
     process.exit(1);
