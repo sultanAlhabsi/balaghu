@@ -14,18 +14,12 @@ const THURSDAY_MSG = `قال الرسولﷺ: "أكثروا من الصلاة ع
 async function postDailyAyah() {
   logger.info('Starting daily ayah post...');
   
-  try {
-    const ayah = await getRandomAyah();
-    const tweet = formatTweet(ayah);
-    
-    const result = await postTweet(tweet);
-    logger.info('Daily ayah posted', { id: result.id, surah: ayah.surahName });
-    return { success: true, id: result.id };
-    
-  } catch (err) {
-    logger.error('Daily ayah failed', { error: err.message });
-    return { success: false, error: err.message };
-  }
+  const ayah = await getRandomAyah();
+  const tweet = formatTweet(ayah);
+  
+  const result = await postTweet(tweet);
+  logger.info('Daily ayah posted', { id: result.id, surah: ayah.surahName });
+  return { success: true, id: result.id };
 }
 
 
@@ -33,30 +27,20 @@ async function postDailyAyah() {
 async function postDailyHadith() {
   logger.info('Starting daily hadith post...');
   
-  try {
-    const hadith = await getRandomHadith();
-    const tweet = formatHadithTweet(hadith);
-    
-    const result = await postTweet(tweet);
-    logger.info('Daily hadith posted', { id: result.id, hadithId: hadith.id });
-    return { success: true, id: result.id };
-    
-  } catch (err) {
-    logger.error('Daily hadith failed', { error: err.message });
-    return { success: false, error: err.message };
-  }
+  const hadith = await getRandomHadith();
+  const tweet = formatHadithTweet(hadith);
+  
+  const result = await postTweet(tweet);
+  logger.info('Daily hadith posted', { id: result.id, hadithId: hadith.id });
+  return { success: true, id: result.id };
 }
 
 // post thursday salawat
 async function postThursdayTweet() {
   logger.info('Posting Thursday salawat...');
   
-  try {
-    const result = await postTweet(THURSDAY_MSG);
-    logger.info('Thursday tweet posted', { id: result.id });
-  } catch (err) {
-    logger.error('Thursday tweet failed', { error: err.message });
-  }
+  const result = await postTweet(THURSDAY_MSG);
+  logger.info('Thursday tweet posted', { id: result.id });
 }
 
 export { postDailyAyah, postThursdayTweet, postDailyHadith };
