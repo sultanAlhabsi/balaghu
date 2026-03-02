@@ -22,9 +22,11 @@ function initClient() {
 async function postTweet(text) {
   initClient();
   
+  logger.info('ENABLE_POSTING env value:', { value: process.env.ENABLE_POSTING, enablePosting: config.enablePosting });
+
   // dry run mode
   if (!config.enablePosting) {
-    logger.warn('Posting disabled, would have posted:', { text });
+    logger.warn('DRY RUN MODE - Posting disabled, would have posted:', { text });
     return { id: 'dry-run', text };
   }
   
@@ -34,8 +36,9 @@ async function postTweet(text) {
 
   while (attempt <= MAX_RETRIES) {
     try {
+      logger.info(`Attempting to post tweet (attempt ${attempt})...`);
       const res = await client.v2.tweet(text);
-      logger.info('Tweet posted!', { id: res.data.id, attempt });
+      logger.info('✅ Tweet posted successfully!', { id: res.data.id, attempt });
       return { id: res.data.id, text: res.data.text };
     } catch (err) {
       if (err.code === 503 || err.code === 500) {

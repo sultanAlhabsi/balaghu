@@ -17,8 +17,16 @@ async function postDailyAyah() {
   const ayah = await getRandomAyah();
   const tweet = formatTweet(ayah);
   
+  logger.info('Tweet content ready', { length: tweet.length, preview: tweet.substring(0, 60) });
+
   const result = await postTweet(tweet);
-  logger.info('Daily ayah posted', { id: result.id, surah: ayah.surahName });
+  
+  if (result.id === 'dry-run') {
+    logger.warn('⚠️  DRY RUN - Tweet was NOT actually posted to X!');
+  } else {
+    logger.info('✅ Tweet posted to X account!', { tweetId: result.id, url: `https://x.com/i/web/status/${result.id}` });
+  }
+  
   return { success: true, id: result.id };
 }
 
@@ -30,8 +38,16 @@ async function postDailyHadith() {
   const hadith = await getRandomHadith();
   const tweet = formatHadithTweet(hadith);
   
+  logger.info('Tweet content ready', { length: tweet.length, preview: tweet.substring(0, 60) });
+
   const result = await postTweet(tweet);
-  logger.info('Daily hadith posted', { id: result.id, hadithId: hadith.id });
+  
+  if (result.id === 'dry-run') {
+    logger.warn('⚠️  DRY RUN - Tweet was NOT actually posted to X!');
+  } else {
+    logger.info('✅ Tweet posted to X account!', { tweetId: result.id, url: `https://x.com/i/web/status/${result.id}` });
+  }
+  
   return { success: true, id: result.id };
 }
 
