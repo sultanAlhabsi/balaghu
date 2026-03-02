@@ -14,6 +14,7 @@ async function test() {
     console.log('Done!');
   } catch (err) {
     console.error('Error:', err.message);
+    process.exit(1);
   }
 }
 
