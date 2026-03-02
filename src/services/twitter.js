@@ -85,4 +85,8 @@ async function verifyCredentials() {
         throw err;
       }
     }
+  }
+}
+
+
 export { postTweet, verifyCredentials };
