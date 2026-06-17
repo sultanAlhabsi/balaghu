@@ -4,17 +4,33 @@
     "slug": "quran-daily-tweet",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/images/app-icon.png",
     "userInterfaceStyle": "automatic",
     "scheme": "qurandaily",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#06100D"
+    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.qurandaily.tweet"
     },
     "android": {
-      "package": "com.qurandaily.tweet"
+      "package": "com.qurandaily.tweet",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/app-icon.png",
+        "backgroundColor": "#06100D"
+      }
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "281f2a3f-d1cb-4597-be9d-f94be1cba022"
+      }
+    },
+    "owner": "sultanalhabsi"
   }
 }
