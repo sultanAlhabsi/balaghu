@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "بلغوا عني ولو آية",
+    "slug": "quran-daily-tweet",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "scheme": "qurandaily",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.qurandaily.tweet"
+    },
+    "android": {
+      "package": "com.qurandaily.tweet"
+    },
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}

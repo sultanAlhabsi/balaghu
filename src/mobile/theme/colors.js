@@ -1,0 +1,60 @@
+const palette = {
+  pine: '#1F7A5C',
+  pineSoft: '#DDF4EA',
+  pineDark: '#73D7B3',
+  gold: '#B88A32',
+  ink: '#151B18',
+  mutedInk: '#69746E',
+  paper: '#FAFAF7',
+  white: '#FFFFFF',
+  night: '#0B0F0D',
+  nightCard: '#141A17',
+  nightRaised: '#19211D',
+  nightBorder: '#26302C',
+  softBorder: '#E4EAE5',
+};
+
+const themes = {
+  light: {
+    background: palette.paper,
+    card: palette.white,
+    cardMuted: '#F0F6F2',
+    brandSurface: palette.pineSoft,
+    border: palette.softBorder,
+    subtleBorder: '#EEF2EE',
+    text: palette.ink,
+    mutedText: palette.mutedInk,
+    accent: palette.pine,
+    accentText: palette.white,
+    secondary: palette.gold,
+    button: '#F5F8F6',
+    buttonText: palette.ink,
+    buttonBorder: '#E5ECE7',
+    shadow: '#23352D',
+    snackbar: palette.ink,
+    snackbarText: palette.white,
+  },
+  dark: {
+    background: palette.night,
+    card: palette.nightCard,
+    cardMuted: palette.nightRaised,
+    brandSurface: '#13251E',
+    border: palette.nightBorder,
+    subtleBorder: '#202823',
+    text: '#F1F5EF',
+    mutedText: '#AEB8B2',
+    accent: palette.pineDark,
+    accentText: '#06130E',
+    secondary: '#E0B45B',
+    button: '#1A231F',
+    buttonText: '#F1F5EF',
+    buttonBorder: '#27332E',
+    shadow: '#000000',
+    snackbar: '#F1F5EF',
+    snackbarText: palette.night,
+  },
+};
+
+export function getTheme(scheme) {
+  return scheme === 'dark' ? themes.dark : themes.light;
+}
