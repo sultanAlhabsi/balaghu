@@ -19,7 +19,7 @@
     "android": {
       "package": "com.qurandaily.tweet",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/app-icon.png",
+        "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#06100D"
       }
     },
