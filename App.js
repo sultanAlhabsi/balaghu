@@ -1,9 +1,13 @@
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, I18nManager, StyleSheet, View } from 'react-native';
 import { useFonts } from 'expo-font';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import HomeScreen from './src/mobile/screens/HomeScreen';
 import { typography } from './src/mobile/theme/typography';
+
+I18nManager.allowRTL(false);
+I18nManager.forceRTL(false);
+I18nManager.swapLeftAndRightInRTL(false);
 
 export default function App() {
   const [fontsLoaded] = useFonts({

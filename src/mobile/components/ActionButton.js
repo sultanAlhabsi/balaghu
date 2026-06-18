@@ -64,12 +64,12 @@ export default function ActionButton({
           },
         ]}
       >
+        <Text style={[styles.label, { color: foregroundColor }]}>{displayLabel}</Text>
         {displayIcon === 'x' ? (
           <XLogo color={foregroundColor} />
         ) : (
           <MaterialIcons name={displayIcon} size={18} color={foregroundColor} />
         )}
-        <Text style={[styles.label, { color: foregroundColor }]}>{displayLabel}</Text>
       </Pressable>
     </Animated.View>
   );
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     gap: 7,
     paddingHorizontal: 10,
   },

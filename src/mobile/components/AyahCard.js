@@ -107,14 +107,14 @@ export default function AyahCard({ ayah, index, theme, onCopied, onError }) {
       ]}
     >
       <View style={styles.header}>
+        <View style={styles.meta}>
+          <Text style={[styles.surah, { color: theme.text }]}>سورة {ayah.surah}</Text>
+          <Text style={[styles.reference, { color: theme.mutedText }]}>{ayah.reference}</Text>
+        </View>
         <View style={[styles.indexBadge, { backgroundColor: theme.brandSurface }]}>
           <Text style={[styles.indexText, { color: theme.accent }]}>
             {toArabicNumber(index + 1)}
           </Text>
-        </View>
-        <View style={styles.meta}>
-          <Text style={[styles.surah, { color: theme.text }]}>سورة {ayah.surah}</Text>
-          <Text style={[styles.reference, { color: theme.mutedText }]}>{ayah.reference}</Text>
         </View>
       </View>
 
@@ -124,12 +124,12 @@ export default function AyahCard({ ayah, index, theme, onCopied, onError }) {
 
       <View style={styles.actions}>
         <ActionButton
-          icon="content-copy"
-          label="نسخ"
-          onPress={copyAyah}
+          icon="x"
+          label="نشر"
+          onPress={postToX}
           theme={theme}
-          accessibilityLabel={`نسخ ${ayah.reference}`}
-          success={copySuccess}
+          variant="primary"
+          accessibilityLabel={`نشر ${ayah.reference} على منصة X`}
         />
         <ActionButton
           icon="ios-share"
@@ -139,12 +139,12 @@ export default function AyahCard({ ayah, index, theme, onCopied, onError }) {
           accessibilityLabel={`مشاركة ${ayah.reference}`}
         />
         <ActionButton
-          icon="x"
-          label="نشر"
-          onPress={postToX}
+          icon="content-copy"
+          label="نسخ"
+          onPress={copyAyah}
           theme={theme}
-          variant="primary"
-          accessibilityLabel={`نشر ${ayah.reference} على منصة X`}
+          accessibilityLabel={`نسخ ${ayah.reference}`}
+          success={copySuccess}
         />
       </View>
     </Animated.View>
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     gap: 12,
   },
   indexBadge: {
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     includeFontPadding: true,
   },
   actions: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     gap: 9,
   },
 });

@@ -159,22 +159,6 @@ export default function HomeScreen() {
         >
           <View style={styles.content}>
             <View style={styles.header}>
-              <Animated.View
-                style={[
-                  styles.brandMark,
-                  { backgroundColor: theme.brandSurface },
-                  { transform: [{ scale: brandScale }] },
-                ]}
-              >
-                <MaterialIcons name="auto-stories" size={24} color={theme.accent} />
-              </Animated.View>
-              <View style={styles.headerText}>
-                <Text style={[styles.kicker, { color: theme.accent }]}>آيات اليوم</Text>
-                <Text style={[styles.title, { color: theme.text }]}>بلغوا عني ولو آية</Text>
-                <Text style={[styles.subtitle, { color: theme.mutedText }]}>
-                  آيات جاهزة للنسخ والمشاركة
-                </Text>
-              </View>
               <Animated.View style={{ transform: [{ scale: themeButtonScale }] }}>
                 <Pressable
                   accessibilityRole="button"
@@ -197,6 +181,22 @@ export default function HomeScreen() {
                     />
                   </Animated.View>
                 </Pressable>
+              </Animated.View>
+              <View style={styles.headerText}>
+                <Text style={[styles.kicker, { color: theme.accent }]}>آيات اليوم</Text>
+                <Text style={[styles.title, { color: theme.text }]}>بلغوا عني ولو آية</Text>
+                <Text style={[styles.subtitle, { color: theme.mutedText }]}>
+                  آيات جاهزة للنسخ والمشاركة
+                </Text>
+              </View>
+              <Animated.View
+                style={[
+                  styles.brandMark,
+                  { backgroundColor: theme.brandSurface },
+                  { transform: [{ scale: brandScale }] },
+                ]}
+              >
+                <MaterialIcons name="auto-stories" size={24} color={theme.accent} />
               </Animated.View>
             </View>
 
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 20,
     alignItems: 'center',
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     gap: 14,
   },
   brandMark: {
